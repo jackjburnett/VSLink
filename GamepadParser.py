@@ -72,113 +72,38 @@ def parse_gamepad(message, gamepad):
 # Tests the script if executed standalone
 # For testing, go to https://hardwaretester.com/gamepad
 if __name__ == "__main__":
-    # Prepare all actions as a list
-    x_actions = [
-        "A_PRESS",
-        "A_RELEASE",
-        "B_PRESS",
-        "B_RELEASE",
-        "X_PRESS",
-        "X_RELEASE",
-        "Y_PRESS",
-        "Y_RELEASE",
-        "LEFT_SHOULDER_PRESS",
-        "LEFT_SHOULDER_RELEASE",
-        "RIGHT_SHOULDER_PRESS",
-        "RIGHT_SHOULDER_RELEASE",
-        "BACK_PRESS",
-        "BACK_RELEASE",
-        "START_PRESS",
-        "START_RELEASE",
-        "LEFT_THUMB_PRESS",
-        "LEFT_THUMB_RELEASE",
-        "RIGHT_THUMB_PRESS",
-        "RIGHT_THUMB_RELEASE",
-        "DPAD_UP_PRESS",
-        "DPAD_UP_RELEASE",
-        "DPAD_DOWN_PRESS",
-        "DPAD_DOWN_RELEASE",
-        "DPAD_LEFT_PRESS",
-        "DPAD_LEFT_RELEASE",
-        "DPAD_RIGHT_PRESS",
-        "DPAD_RIGHT_RELEASE",
-        "LEFT_TRIGGER_PRESS",
-        "LEFT_TRIGGER_RELEASE",
-        "RIGHT_TRIGGER_PRESS",
-        "RIGHT_TRIGGER_RELEASE",
-    ]
-    d_actions = [
-        "CROSS_PRESS",
-        "CROSS_RELEASE",
-        "CIRCLE_PRESS",
-        "CIRCLE_RELEASE",
-        "TRIANGLE_PRESS",
-        "TRIANGLE_RELEASE",
-        "SQUARE_PRESS",
-        "SQUARE_RELEASE",
-        "L1_PRESS",
-        "L1_RELEASE",
-        "R1_PRESS",
-        "R1_RELEASE",
-        "SHARE_PRESS",
-        "SHARE_RELEASE",
-        "OPTIONS_PRESS",
-        "OPTIONS_RELEASE",
-        "DPAD_UP_PRESS",
-        "DPAD_UP_RELEASE",
-        "DPAD_DOWN_PRESS",
-        "DPAD_DOWN_RELEASE",
-        "DPAD_LEFT_PRESS",
-        "DPAD_LEFT_RELEASE",
-        "DPAD_RIGHT_PRESS",
-        "DPAD_RIGHT_RELEASE",
-        "LEFT_TRIGGER_PRESS",
-        "LEFT_TRIGGER_RELEASE",
-        "RIGHT_TRIGGER_PRESS",
-        "RIGHT_TRIGGER_RELEASE",
-        "PS_BUTTON_PRESS",
-        "PS_BUTTON_RELEASE",
-        "TOUCHPAD_PRESS",
-        "TOUCHPAD_RELEASE",
-    ]
+    # Use the maps as the source of truth, including aliases and RESET.
+    # Their insertion order keeps each press/release pair together.
+    x_actions = list(AMX.ACTION_MAP)
+    d_actions = list(AMD.ACTION_MAP)
     joystick_actions = [
-        "LEFT_JOYSTICK_LEFT",
-        "LEFT_JOYSTICK_RIGHT",
-        "LEFT_JOYSTICK_UP",
-        "LEFT_JOYSTICK_DOWN",
-        "LEFT_JOYSTICK_RESET",
-        "RIGHT_JOYSTICK_LEFT",
-        "RIGHT_JOYSTICK_RIGHT",
-        "RIGHT_JOYSTICK_UP",
-        "RIGHT_JOYSTICK_DOWN",
-        "RIGHT_JOYSTICK_RESET",
-        # Test joystick continuous values
-        "LEFT_JOYSTICK_-1.0_0.0",
-        "LEFT_JOYSTICK_1.0_0.0",
-        "LEFT_JOYSTICK_0.0_-1.0",
-        "LEFT_JOYSTICK_0.0_1.0",
-        "LEFT_JOYSTICK_0.0_0.0",
-        "RIGHT_JOYSTICK_-1.0_0.0",
-        "RIGHT_JOYSTICK_1.0_0.0",
-        "RIGHT_JOYSTICK_0.0_-1.0",
-        "RIGHT_JOYSTICK_0.0_1.0",
-        "RIGHT_JOYSTICK_0.0_0.0",
+        # Digital joystick directions are already covered by each action map.
+        f"{side}_JOYSTICK_{x}_{y}"
+        for side in ("LEFT", "RIGHT")
+        for x, y in (
+            (-1.0, 0.0), (1.0, 0.0), (0.0, -1.0), (0.0, 1.0),
+            (-0.5, 0.5), (0.5, -0.5), (-2.0, 2.0), (2.0, -2.0),
+            (0.0, 0.0),  # Return to neutral after each stick.
+        )
     ]
     trigger_actions = [
-        # Test trigger continuous values
-        "LEFT_TRIGGER_0.5",
-        "LEFT_TRIGGER_1.0",
-        "LEFT_TRIGGER_0.0",
-        "RIGHT_TRIGGER_0.5",
-        "RIGHT_TRIGGER_1.0",
-        "RIGHT_TRIGGER_0.0",
+        # The analog handler supports all six aliases on either controller.
+        f"{trigger}_{value}"
+        for trigger in ("LEFT_TRIGGER", "LT", "L2", "RIGHT_TRIGGER", "RT", "R2")
+        for value in (0.5, 1.0, -0.5, 1.5, 0.0)
     ]
 
     def test_gamepad(gamepad, actions):
         """Test a gamepad with a list of actions"""
-        for act in actions:
-            parse_gamepad(act, gamepad)
-            time.sleep(1)
+        try:
+            for act in actions:
+                print(f"Testing {type(gamepad).__name__}: {act}")
+                parse_gamepad(act, gamepad)
+                time.sleep(1)
+        finally:
+            # Release held buttons/axes even if a manual test is interrupted.
+            gamepad.reset()
+            gamepad.update()
 
     # Test XBOX controller
     TestGamepad = vg.VX360Gamepad()
