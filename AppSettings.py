@@ -25,7 +25,7 @@ class ReceiverSettings:
 class SettingsStore:
     def __init__(self, path=None):
         directory = Path(os.environ.get("VLR_CONFIG_DIR") or (
-            Path(os.environ.get("LOCALAPPDATA", Path.home())) / "VirtualLeverlessReceiver"
+            Path(os.environ.get("LOCALAPPDATA", Path.home())) / "VSLink"
         ))
         self.path = Path(path) if path is not None else directory / "settings.json"
 

@@ -34,7 +34,7 @@ class _LogStream(io.TextIOBase):
 def configure_logging(directory=None):
     # This can be overridden for portable installs and isolated smoke tests.
     directory = Path(directory or os.environ.get("VLR_LOG_DIR") or (
-        Path(os.environ.get("LOCALAPPDATA", Path.home())) / "VirtualLeverlessReceiver" / "logs"
+        Path(os.environ.get("LOCALAPPDATA", Path.home())) / "VSLink" / "logs"
     ))
     directory.mkdir(parents=True, exist_ok=True)
     handler = RotatingFileHandler(directory / "receiver.log", maxBytes=2_000_000,

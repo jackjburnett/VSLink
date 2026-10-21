@@ -79,7 +79,7 @@ For the combined receiver without a tray:
 
 Press Ctrl+C to shut down the console receiver and release its controllers.
 Both entry points load the same per-user settings file:
-`%LOCALAPPDATA%\VirtualLeverlessReceiver\settings.json`. Tray changes are saved
+`%LOCALAPPDATA%\VSLink\settings.json`. Tray changes are saved
 automatically. The default port is 8000; valid ports are 1 through 65535.
 `VLR_CONFIG_DIR` can override the settings directory for portable installs/tests.
 
@@ -134,7 +134,7 @@ enable Start with Windows again to register the new executable path.
   tray uses the combined coordinator instead.
 
 Logs are stored in
-`%LOCALAPPDATA%\VirtualLeverlessReceiver\logs\receiver.log`, with three rotating
+`%LOCALAPPDATA%\VSLink\logs\receiver.log`, with three rotating
 backups. Existing gamepad print output is captured there too. Per-packet logging
 stays off during normal play. `VLR_LOG_DIR` can override the log folder for a
 portable install or isolated test.
